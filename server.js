@@ -22,10 +22,9 @@ app.get("/", (req, res) => {
 
 // endpoint for getting all thoughts
 app.get("/thoughts", (req, res) => {
-  const { message, minHearts } = req.query;
+  const { message, minHearts, sort } = req.query;
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
-
 
   let filteredThoughts = data;
 
@@ -46,6 +45,14 @@ app.get("/thoughts", (req, res) => {
     return res.status(404).json({
       message: "No thoughts found matching your filters.",
     });
+  }
+
+  // sort by hearts: ascending if "hearts", descending if "-hearts"
+
+  if (sort === "most-liked") {
+    filteredThoughts.sort((a, b) => Number(b.hearts) - Number(a.hearts));
+  } else if (sort === "least-liked") {
+    filteredThoughts.sort((a, b) => Number(a.hearts) - Number(b.hearts));
   }
 
   // pagination
