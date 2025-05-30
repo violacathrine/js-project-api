@@ -23,19 +23,42 @@ app.get("/", (req, res) => {
 // endpoint for getting all thoughts
 app.get("/thoughts", (req, res) => {
   const { message, minHearts } = req.query;
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+
+
   let filteredThoughts = data;
 
   if (message) {
-    filteredThoughts = filteredThoughts.filter(
-      (thought) => thought.message.toLowerCase().includes(message.toLowerCase())
+    filteredThoughts = filteredThoughts.filter((thought) =>
+      thought.message.toLowerCase().includes(message.toLowerCase())
     );
   }
 
   if (minHearts) {
-    filteredThoughts = filteredThoughts.filter((thought) =>
-      thought.hearts >= Number (minHearts)
+    filteredThoughts = filteredThoughts.filter(
+      (thought) => thought.hearts >= Number(minHearts)
     );
   }
+
+  // error message if no thoughts where found to a specific filter
+  if (filteredThoughts.length === 0) {
+    return res.status(404).json({
+      message: "No thoughts found matching your filters.",
+    });
+  }
+
+  // pagination
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const paginatedThoughts = filteredThoughts.slice(startIndex, endIndex);
+
+  res.json({
+    page: Number(page),
+    limit: Number(limit),
+    total: filteredThoughts.length,
+    results: paginatedThoughts,
+  });
 
   res.json(filteredThoughts);
 });

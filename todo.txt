@@ -5,12 +5,12 @@
 - [x] Minst en route returnerar en lista med flera objekt (array).
 - [x] Minst en route returnerar ett enskilt objekt (single element).
 - [x] API:t följer RESTful-principer.
-- [x] Koden är städad och följer principer för clean code.
+- [] Koden är städad och följer principer för clean code.
 
 #### 🧠 Stretch goals
 
 - [x] Routes som returnerar ett enskilt objekt hanterar om objektet inte finns och ger användbar information i svaret.
-- [ ] Implementera pagination med `.slice()` för stora datamängder, och använd query-parametrar som `?page=2`.
+- [x] Implementera pagination med `.slice()` för stora datamängder, och använd query-parametrar som `?page=2`.
 - [ ] Lägg till kategori eller taggar för tankar (t.ex. "Food thoughts", "Work thoughts").
 - [ ] Lägg till sortering och filtrering i endpointen som returnerar alla tankar. Exempel:
   - [ ] Sortera på datum eller antal likes.
