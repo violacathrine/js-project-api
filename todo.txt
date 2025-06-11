@@ -13,7 +13,7 @@
 - [x] Implementera pagination med `.slice()` för stora datamängder, och använd query-parametrar som `?page=2`.
 - [ ] Lägg till kategori eller taggar för tankar (t.ex. "Food thoughts", "Work thoughts").
 - [ ] Lägg till sortering och filtrering i endpointen som returnerar alla tankar. Exempel:
-  - [ x] Sortera på datum eller antal likes.
+  - [/] Sortera på datum eller antal likes.
   - [x] Filtrera på tankar med fler än X hjärtan.
   - [ ] Filtrera på tankar nyare än ett visst datum.
   - [ ] Filtrera på specifika kategorier (om du har implementerat dem).
