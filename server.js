@@ -6,6 +6,7 @@ import cors from "cors";
 import listEndpoints from "express-list-endpoints";
 
 import { connectToDatabase } from "./db.js"; // import connection
+import authRoutes from "./routes/authRoutes.js";
 import thoughtsRoutes from "./routes/thoughtsRoutes.js";
 
 const port = process.env.PORT || 8080;
@@ -13,6 +14,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Public-API för autentisering
+app.use("/auth", authRoutes);
 
 app.get("/", (req, res) => {
   const endpoints = listEndpoints(app);
