@@ -13,12 +13,12 @@ import {
 
 const router = express.Router();
 
-// --- PUBLIKA ROUTES ---
+// --- PUBLIC ROUTES ---
 router.get("/", getThoughts);
 router.get("/:id", getThoughtById);
 
-// --- SKYDDADE ROUTES ---
-// Skapa tanke
+// --- SECURED ROUTES ---
+// Create thought
 router.post(
   "/",
   verifyToken,
@@ -26,17 +26,12 @@ router.post(
     body("message")
       .isString()
       .isLength({ min: 5, max: 140 })
-      .withMessage("Meddelandet måste vara mellan 5 och 140 tecken."),
-    // Ta bort kategori om du inte vill ha det:
-    body("category")
-      .optional()
-      .isIn(["Food", "Work", "Life", "Other"])
-      .withMessage("Ogiltig kategori."),
+      .withMessage("Message must be 5–140 characters."),
   ],
   createThought
 );
 
-// Uppdatera tanke
+// Update a thought
 router.patch(
   "/:id",
   verifyToken,
@@ -45,23 +40,19 @@ router.patch(
       .optional()
       .isString()
       .isLength({ min: 5, max: 140 })
-      .withMessage("Meddelandet (om satt) måste vara 5–140 tecken."),
+      .withMessage("Message (if set) must be 5–140 characters."),
     body("hearts")
       .optional()
       .isInt({ min: 0 })
-      .withMessage("Hearts måste vara ett heltal ≥ 0."),
-    body("category")
-      .optional()
-      .isIn(["Food", "Work", "Life", "Other"])
-      .withMessage("Ogiltig kategori."),
+      .withMessage("Hearts must be a whole number ≥ 0."),
   ],
   updateThought
 );
 
-// Radera tanke
+// Delete a thought
 router.delete("/:id", verifyToken, deleteThought);
 
-// Gilla/ogilla tanke
+// Like/Unlike a thought
 router.patch("/:id/like", verifyToken, likeThought);
 router.patch("/:id/unlike", verifyToken, unlikeThought);
 

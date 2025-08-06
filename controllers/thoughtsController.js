@@ -25,10 +25,7 @@ export const getThoughts = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
-    if (results.length === 0) {
-      return res.status(404).json({ message: "No thoughts found." });
-    }
-
+    // Always return 200 with results array (possibly empty)
     res.json({ page: Number(page), limit: Number(limit), total, results });
   } catch (error) {
     res.status(500).json({ error: "Server error", details: error });
@@ -50,15 +47,14 @@ export const getThoughtById = async (req, res) => {
 
 // Create a new thought
 export const createThought = async (req, res) => {
-  // Valideringssteg
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   try {
-    const { message, category } = req.body;
-    const newThought = new Thought({ message, category });
+    const { message } = req.body;
+    const newThought = new Thought({ message, user: req.user.id });
     await newThought.save();
     res.status(201).json(newThought);
   } catch (error) {
@@ -66,42 +62,56 @@ export const createThought = async (req, res) => {
   }
 };
 
-// Update an existing thought
+// UPDATE A THOUGHT
 export const updateThought = async (req, res) => {
-  // Valideringssteg
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   const { id } = req.params;
-  const { message, hearts, category } = req.body;
-
+  const { message } = req.body;
   try {
-    const updatedThought = await Thought.findByIdAndUpdate(
-      id,
-      { message, hearts, category },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedThought) {
+    // Get the thought by ID and check ownership
+    const thought = await Thought.findById(id);
+    if (!thought) {
       return res.status(404).json({ error: "Thought not found" });
     }
 
-    res.json(updatedThought);
+    // Ensure the user is the owner of the thought
+    if (thought.user.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: "You can only update your own thoughts" });
+    }
+
+    // Update the thought message
+    thought.message = message;
+    await thought.save();
+    res.json(thought);
   } catch (error) {
     res.status(400).json({ error: "Invalid update", details: error });
   }
 };
 
-// Delete a thought
+// DELETE A THOUGHT
 export const deleteThought = async (req, res) => {
   try {
-    const deletedThought = await Thought.findByIdAndDelete(req.params.id);
-    if (!deletedThought) {
+    const thought = await Thought.findById(req.params.id);
+    if (!thought) {
       return res.status(404).json({ error: "Thought not found" });
     }
-    res.json({ message: "Thought deleted successfully", deletedThought });
+
+    // Ensure the user is the owner of the thought
+    if (thought.user.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: "You can only delete your own thoughts" });
+    }
+
+    // Delete the thought
+    await thought.deleteOne();
+    res.json({ message: "Thought deleted successfully" });
   } catch (error) {
     res.status(400).json({ error: "Invalid ID", details: error });
   }
@@ -132,6 +142,6 @@ export const unlikeThought = async (req, res) => {
     await thought.save();
     res.json(thought);
   } catch (error) {
-    res.status(400).json({ error: "Failed to unlike", details: error });
+    res.status(400).json({ error: "Failed to unlike thought", details: error });
   }
 };
