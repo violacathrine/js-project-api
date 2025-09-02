@@ -1,11 +1,60 @@
-# Project API
+# Happy Thoughts API
 
-This project includes the packages and babel setup for an express server, and is just meant to make things a little simpler to get up and running with.
+Backend API for sharing happy thoughts. Users can post thoughts, like others' thoughts, and manage their own content.
 
-## Getting started
+## Live Demo
 
-Install dependencies with `npm install`, then start the server by running `npm run dev`
+**API:** [https://js-project-api-cathi.onrender.com](https://js-project-api-cathi.onrender.com)
 
-## View it live
+## Tech Stack
 
-Every project should be deployed somewhere. Be sure to include the link to the deployed project so that the viewer can click around and see what it's all about.
+- Node.js & Express
+- MongoDB with Mongoose
+- JWT authentication
+- bcrypt for passwords
+
+## API Endpoints
+
+### Authentication
+- `POST /auth/register` - Register user
+- `POST /auth/login` - Login user
+
+### Thoughts
+- `GET /thoughts` - Get all thoughts
+- `POST /thoughts` - Create thought
+- `PATCH /thoughts/:id` - Update thought (own only)
+- `DELETE /thoughts/:id` - Delete thought (own only)
+- `PATCH /thoughts/:id/like` - Like thought
+- `PATCH /thoughts/:id/unlike` - Unlike thought
+
+## Installation
+
+1. Clone repo and install dependencies:
+```bash
+npm install
+```
+
+2. Create `.env` file:
+```
+MONGO_URL=mongodb://localhost/happy-thoughts
+JWT_SECRET=your-secret-key
+PORT=8080
+```
+
+3. Start development server:
+```bash
+npm run dev
+```
+
+## Features
+
+- ✅ Anonymous and authenticated posting
+- ✅ User authentication with JWT
+- ✅ CRUD operations for thoughts
+- ✅ Like/unlike functionality
+- ✅ Input validation and error handling
+- ✅ Pagination and filtering
+
+## Deployment
+
+Deployed on Render with MongoDB Atlas database.
