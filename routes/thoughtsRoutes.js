@@ -1,6 +1,6 @@
 import express from "express";
 import { body } from "express-validator";
-import { verifyToken } from "../middleware/auth.js";
+import { verifyToken, optionalAuth } from "../middleware/auth.js";
 import {
   getThoughts,
   getThoughtById,
@@ -17,11 +17,10 @@ const router = express.Router();
 router.get("/", getThoughts);
 router.get("/:id", getThoughtById);
 
-// --- SECURED ROUTES ---
-// Create thought
+// Create thought (public - anyone can post, but we check for optional auth)
 router.post(
   "/",
-  verifyToken,
+  optionalAuth,
   [
     body("message")
       .isString()
@@ -30,6 +29,12 @@ router.post(
   ],
   createThought
 );
+
+// Like/Unlike a thought (public - anyone can like)
+router.patch("/:id/like", optionalAuth, likeThought);
+router.patch("/:id/unlike", optionalAuth, unlikeThought);
+
+// --- SECURED ROUTES ---
 
 // Update a thought
 router.patch(
@@ -51,9 +56,5 @@ router.patch(
 
 // Delete a thought
 router.delete("/:id", verifyToken, deleteThought);
-
-// Like/Unlike a thought
-router.patch("/:id/like", verifyToken, likeThought);
-router.patch("/:id/unlike", verifyToken, unlikeThought);
 
 export default router;

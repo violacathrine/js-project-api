@@ -52,7 +52,8 @@ export const createThought = async (req, res) => {
     const { message } = req.body;
     const newThought = new Thought({
       message,
-      user: req.user.userId, // använd alltid userId från JWT
+      // If user is logged in (req.user exists), save their ID, otherwise null for anonymous
+      user: req.user?.id || null,
     });
     await newThought.save();
     res.status(201).json(newThought);
@@ -74,7 +75,7 @@ export const updateThought = async (req, res) => {
     if (!thought) return res.status(404).json({ error: "Thought not found" });
 
     // ägarskapskontroll
-    if (!thought.user.equals(req.user.userId)) {
+    if (!thought.user.equals(req.user.id)) {
       return res
         .status(403)
         .json({ error: "You can only update your own thoughts" });
@@ -95,7 +96,7 @@ export const deleteThought = async (req, res) => {
     if (!thought) return res.status(404).json({ error: "Thought not found" });
 
     // ägarskapskontroll
-    if (!thought.user.equals(req.user.userId)) {
+    if (!thought.user.equals(req.user.id)) {
       return res
         .status(403)
         .json({ error: "You can only delete your own thoughts" });
@@ -116,6 +117,7 @@ export const likeThought = async (req, res) => {
       { $inc: { hearts: 1 } },
       { new: true }
     );
+    if (!updated) return res.status(404).json({ error: "Thought not found" });
     res.json(updated);
   } catch (error) {
     res.status(400).json({ error: "Failed to like thought", details: error });
